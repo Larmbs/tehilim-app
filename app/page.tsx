@@ -1,9 +1,9 @@
 "use client"; // Ensure client-side rendering
 import React, { useState, useEffect } from "react";
-import ShareModal from "./share"; // Import your new ShareModal component
+import ShareModal from "./components/share"; // Import your new ShareModal component
 import gematriya from "gematriya";
 import "./globals.css";
-import TextComponent, { Lang, getLangSymbol } from "./text"; // Adjust import based on your structure
+import TextComponent, { Lang, getLangSymbol } from "./components/text"; // Adjust import based on your structure
 
 const TehilimPage: React.FC = () => {
   const [perekNumber, setPerekNumber] = useState<number>(1);

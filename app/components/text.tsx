@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { fetchTehilimChapterV3 } from "./sefaria";
+import { fetchTehilimChapterV3 } from "../scripts/sefaria";
 
 /**
  * Enum representing the available languages for displaying text.
