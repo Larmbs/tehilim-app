@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ShareModal from "./components/share"; // Import your new ShareModal component
 import gematriya from "gematriya";
-import "./globals.css";
+import "./styles/globals.css";
 import TextComponent, { Lang, getLangSymbol } from "./components/text"; // Adjust import based on your structure
 
 const TehilimPage: React.FC = () => {
