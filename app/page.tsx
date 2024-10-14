@@ -1,34 +1,12 @@
 "use client"; // Ensure client-side rendering
-
 import React, { useState, useEffect } from "react";
-import Modal from "react-modal"; // Import react-modal
-import {
-  FacebookShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-  TelegramShareButton,
-  EmailShareButton,
-  FacebookIcon,
-  TwitterIcon,
-  WhatsappIcon,
-  TelegramIcon,
-  EmailIcon,
-} from "react-share";
-import "./globals.css";
-
-import "gematriya";
+import ShareModal from "./share"; // Import your new ShareModal component
 import gematriya from "gematriya";
-
-import TextComponent, { Lang, getLangSymbol } from "./text"; // Import Lang and getLangSymbol
-
-// Set the app element for accessibility (recommended by react-modal)
-Modal.setAppElement("html"); // Make sure to set this to the root element of your app
+import "./globals.css";
+import TextComponent, { Lang, getLangSymbol } from "./text"; // Adjust import based on your structure
 
 const TehilimPage: React.FC = () => {
-  const params = new URLSearchParams(window.location.search);
-  const number = Number(params.get("chapter") || "1") || 1;
-
-  const [perekNumber, setPerekNumber] = useState<number>(number);
+  const [perekNumber, setPerekNumber] = useState<number>(1);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Modal state
   const [currentUrl, setCurrentUrl] = useState<string | null>(null); // Current page URL
   const [lang, setLang] = useState<Lang>(Lang.Hebrew_English);
@@ -40,15 +18,17 @@ const TehilimPage: React.FC = () => {
   }, []);
 
   const handleNextPerek = () => {
-    setPerekNumber((prev) => (prev < 150 ? prev + 1 : 1)); // Ensure it loops back
+    setPerekNumber((prev) => (prev + 1) % 151);
   };
 
   const swapLang = () => {
-    setLang((prevLang) => {
-      if (prevLang === Lang.English) return Lang.Hebrew;
-      if (prevLang === Lang.Hebrew) return Lang.Hebrew_English;
-      return Lang.English;
-    });
+    if (lang === Lang.English) {
+      setLang(Lang.Hebrew);
+    } else if (lang === Lang.Hebrew) {
+      setLang(Lang.Hebrew_English);
+    } else {
+      setLang(Lang.English);
+    }
   };
 
   // Function to open the modal
@@ -58,97 +38,44 @@ const TehilimPage: React.FC = () => {
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div className="flex flex-col items-center justify-center p-8 bg-gradient-to-r from-blue-100 to-white min-h-screen">
-      <h1 className="text-4xl font-extrabold text-blue-700 mb-2">
+    <div className="flex flex-col items-center justify-center p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-3xl font-bold text-blue-600 mb-4">
         תהילים פרק {gematriya(perekNumber)}
       </h1>
-      <h2 className="text-3xl font-semibold text-gray-800 mb-6">
+      <h2 className="text-2xl font-semibold text-gray-700 mb-6">
         Psalms Chapter {perekNumber}
       </h2>
 
       <button
         onClick={swapLang}
-        className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-500 transition duration-200 ease-in-out"
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
       >
         {getLangSymbol(lang)}
       </button>
-
       <TextComponent lang={lang} chapter={perekNumber} />
-
-      <div className="flex mt-8 space-x-6">
+      <div className="flex mt-6 space-x-4">
         <button
           onClick={handleNextPerek}
-          className="px-8 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-500 transition duration-200 ease-in-out"
+          className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
         >
           Next Perek
         </button>
 
         <button
           onClick={openModal}
-          className="px-8 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-500 transition duration-200 ease-in-out"
+          className="px-6 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
         >
           Share Perek
         </button>
       </div>
 
-      {/* Modal */}
-      <Modal
+      {/* Use the ShareModal component here */}
+      <ShareModal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
-        contentLabel="Share Perek Modal"
-        className="fixed inset-0 flex items-center justify-center p-4"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50"
-      >
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Share this Perek</h2>
-          <div className="flex justify-center space-x-4 mb-6">
-            {/* WhatsApp */}
-            <WhatsappShareButton url={currentUrl || ""}>
-              <WhatsappIcon size={40} round />
-            </WhatsappShareButton>
-
-            {/* Facebook */}
-            <FacebookShareButton
-              url={currentUrl || ""}
-              title={`Tehilim Perek ${perekNumber}`}
-            >
-              <FacebookIcon size={40} round />
-            </FacebookShareButton>
-
-            {/* Twitter */}
-            <TwitterShareButton
-              url={currentUrl || ""}
-              title={`Tehilim Perek ${perekNumber}`}
-            >
-              <TwitterIcon size={40} round />
-            </TwitterShareButton>
-
-            {/* Telegram */}
-            <TelegramShareButton
-              url={currentUrl || ""}
-              title={`Tehilim Perek ${perekNumber}`}
-            >
-              <TelegramIcon size={40} round />
-            </TelegramShareButton>
-
-            {/* Email */}
-            <EmailShareButton
-              url={currentUrl || ""}
-              subject={`Tehilim Perek ${perekNumber}`}
-              body={""}
-            >
-              <EmailIcon size={40} round />
-            </EmailShareButton>
-          </div>
-
-          <button
-            onClick={closeModal}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition duration-200 ease-in-out"
-          >
-            Close
-          </button>
-        </div>
-      </Modal>
+        currentUrl={currentUrl}
+        perekNumber={perekNumber}
+      />
     </div>
   );
 };
